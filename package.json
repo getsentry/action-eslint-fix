@@ -1,33 +1,36 @@
 {
-  "name": "typescript-action",
+  "name": "@getsentry/action-eslint-fix",
   "version": "0.0.0",
   "private": true,
-  "description": "TypeScript template action",
+  "description": "Lint and fix javascript",
   "main": "lib/main.js",
   "scripts": {
-    "build": "tsc",
-    "format": "prettier --write **/*.ts",
-    "format-check": "prettier --check **/*.ts",
-    "lint": "eslint src/**/*.ts",
-    "pack": "ncc build",
-    "test": "jest",
-    "all": "npm run build && npm run format && npm run lint && npm run pack && npm test"
+    "build": "yarn tsc",
+    "format": "yarn prettier --write **/*.ts",
+    "format-check": "yarn prettier --check **/*.ts",
+    "lint": "yarn eslint src/**/*.ts",
+    "test": "yarn jest",
+    "all": "yarn build && yarn ncc build && yarn test"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/getsentry/action-eslint-fix.git"
   },
   "keywords": [
     "actions",
     "node",
     "setup"
   ],
-  "author": "YourNameOrOrganization",
+  "author": "getsentry",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0"
+    "@actions/core": "^1.2.0",
+    "@actions/exec": "^1.0.3",
+    "@actions/github": "^2.1.1",
+    "@actions/glob": "^0.1.0"
   },
   "devDependencies": {
+    "@octokit/webhooks": "^7.1.0",
     "@types/jest": "^24.0.23",
     "@types/node": "^12.7.12",
     "@typescript-eslint/parser": "^2.8.0",

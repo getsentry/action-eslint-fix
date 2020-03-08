@@ -1,17 +1,218 @@
-import * as core from '@actions/core'
-import {wait} from './wait'
+import * as path from 'path'
+import fs from 'fs'
 
+import * as core from '@actions/core'
+import * as github from '@actions/github'
+import * as glob from '@actions/glob'
+import * as Webhooks from '@octokit/webhooks'
+
+import {exec} from '@actions/exec'
+
+async function getChangedFiles(): Promise<string[]>{
+  let output = ''
+  let error = ''
+
+  core.debug('getChangedFiles');
+
+  if (!process.env.GITHUB_EVENT_PATH) {
+    core.debug('no event path');
+    return [];
+  }
+
+  const event = require(process.env.GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest;
+
+  try {
+    await exec(
+      'git',
+      [
+        'diff-tree',
+        '--diff-filter=d',
+        '--no-commit-id',
+        '--name-only',
+        '-r',
+        event.pull_request.base.sha,
+        event.pull_request.head.sha
+      ],
+      {
+        listeners: {
+          stdout: (data: Buffer) => {
+            output += data.toString()
+          },
+          stderr: (data: Buffer) => {
+            error += data.toString()
+          }
+        }
+      }
+    )
+  } catch {}
+
+  if (error) {
+    throw new Error(error)
+  }
+
+  core.debug(`getChangedFiles ${output}`)
+  return output.split('\n') || []
+}
+
+// import {CLIEngine} from 'eslint';
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const CLIEngine = require('eslint').CLIEngine
+    const octokit = new github.GitHub(core.getInput('myToken'))
+    // const changedFiles = core.getInput('changedFiles')
+    const changedFiles = await getChangedFiles()
+    core.debug(changedFiles.join(', '))
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    const patterns = ['.eslintrc*']
+    const globber = await glob.create(patterns.join('\n'))
+    const files = await globber.glob()
 
-    core.setOutput('time', new Date().toTimeString())
+    core.debug(`config files`)
+    core.debug(`config files ${files.join(', ')}`)
+
+    let myOutput = ''
+    let myError = ''
+    try {
+      await exec(
+        'node',
+        [
+          path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
+          `--config`,
+          files[0],
+          `--fix-dry-run`,
+          '--format',
+          'json',
+          changedFiles
+            .map((changedFile: string) =>
+              path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
+            )
+            .join(' ')
+        ],
+        {
+          listeners: {
+            stdout: (data: Buffer) => {
+              myOutput += data.toString()
+            },
+            stderr: (data: Buffer) => {
+              myError += data.toString()
+            }
+          }
+        }
+      )
+    } catch {}
+
+    core.debug(myOutput)
+    core.debug(myError)
+
+    const cli = new CLIEngine({
+      // configFile: path.join(
+      // process.env.GITHUB_WORKSPACE || '',
+      // '.eslintrc.json'
+      // ),
+      configFile: files[0],
+      useEslintrc: false,
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      fix: true
+    })
+
+    core.debug(`cwd: ${process.cwd()}`)
+
+    if (!changedFiles.length) {
+      core.debug('No changed files')
+      return
+    }
+
+    core.debug(
+      changedFiles
+        .map((changedFile: string) =>
+          path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
+        )
+        .join(', ')
+    )
+    // This is probably going to fail on filenames with a space?
+    const report = cli.executeOnFiles(
+      changedFiles
+        .map((changedFile: string) =>
+          path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
+        )
+    )
+
+    core.debug(JSON.stringify(report, null, 2))
+
+    if (!process.env.GITHUB_REPOSITORY) {
+      return
+    }
+
+    const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/')
+
+    report.results.forEach(async (result: any) => {
+      const filePath = result.filePath.replace(
+        `${process.env.GITHUB_WORKSPACE}/`,
+        ''
+      )
+
+      let file
+
+      if (result.output) {
+        try {
+          core.debug(`getContents: ${filePath}`)
+          const {data} = await octokit.repos.getContents({
+            owner,
+            repo,
+            path: filePath,
+            ref: process.env.GITHUB_HEAD_REF
+          })
+          file = data
+        } catch (err) {
+          core.debug(err.message)
+        }
+
+        if (!file || Array.isArray(file)) {
+          return
+        }
+
+        // Commit eslint fixes
+        octokit.repos.createOrUpdateFile({
+          owner,
+          repo,
+          path: filePath,
+          sha: file.sha,
+          message: 'style(): Auto eslint fix',
+          content: Buffer.from(result.output).toString('base64'),
+          branch: process.env.GITHUB_HEAD_REF
+        })
+      }
+    })
+
+    /**
+     * Alternative eslint runner
+    let myOutput = ''
+    let myError = ''
+    await exec(
+      path.join(process.env.GITHUB_WORKSPACE || '', 'node_modules/.bin/eslint'),
+      [
+        `--fix-dry-run`,
+        '--format=json',
+        path.join(process.env.GITHUB_WORKSPACE || '', 'src/main.ts')
+      ],
+      {
+        listeners: {
+          stdout: (data: Buffer) => {
+            myOutput += data.toString()
+          },
+          stderr: (data: Buffer) => {
+            myError += data.toString()
+          }
+        }
+      }
+    )
+
+    core.debug(myOutput)
+    core.debug(myError)
+     */
   } catch (error) {
+    core.debug(error.stack)
     core.setFailed(error.message)
   }
 }

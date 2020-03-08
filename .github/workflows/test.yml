@@ -10,14 +10,26 @@ jobs:
   build: # make sure build/ci work properly
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - run: |
-        npm install
-        npm run all
+        yarn install
+        yarn all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - run: |
+        yarn install
+        yarn all
+
+    - name: Get changed files in PR
+      id: getfiles
+      run: |
+        echo "::set-output name=files::$(git diff-tree --diff-filter=r --no-commit-id --name-only -r ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | xargs)"
+
     - uses: ./
-      with: 
-        milliseconds: 1000
+      with:
+        changedFiles: ${{ steps.getfiles.outputs.files }}
+        myToken: ${{ secrets.GITHUB_TOKEN }}
