@@ -24,12 +24,6 @@ jobs:
         yarn install
         yarn all
 
-    - name: Get changed files in PR
-      id: getfiles
-      run: |
-        echo "::set-output name=files::$(git diff-tree --diff-filter=r --no-commit-id --name-only -r ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} | xargs)"
-
     - uses: ./
       with:
-        changedFiles: ${{ steps.getfiles.outputs.files }}
         myToken: ${{ secrets.GITHUB_TOKEN }}

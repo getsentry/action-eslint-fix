@@ -60,7 +60,6 @@ async function run(): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const CLIEngine = require('eslint').CLIEngine
     const octokit = new github.GitHub(core.getInput('myToken'))
-    // const changedFiles = core.getInput('changedFiles')
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
 
