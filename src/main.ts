@@ -1,5 +1,4 @@
 import * as path from 'path'
-import fs from 'fs'
 
 import * as core from '@actions/core'
 import * as github from '@actions/github'
@@ -54,11 +53,8 @@ async function getChangedFiles(): Promise<string[]>{
   return output.split('\n') || []
 }
 
-// import {CLIEngine} from 'eslint';
 async function run(): Promise<void> {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const CLIEngine = require('eslint').CLIEngine
     const octokit = new github.GitHub(core.getInput('myToken'))
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
@@ -100,9 +96,19 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(myOutput)
     core.debug(myError)
 
+    let report
+    try {
+      report = JSON.parse(myOutput);
+    } catch(err) {
+      core.setFailed(err.message);
+    }
+
+
+    // core.debug(myOutput)
+
+    /**
     const cli = new CLIEngine({
       // configFile: path.join(
       // process.env.GITHUB_WORKSPACE || '',
@@ -137,6 +143,7 @@ async function run(): Promise<void> {
     )
 
     core.debug(JSON.stringify(report, null, 2))
+     **/
 
     if (!process.env.GITHUB_REPOSITORY) {
       return
@@ -182,33 +189,6 @@ async function run(): Promise<void> {
         })
       }
     })
-
-    /**
-     * Alternative eslint runner
-    let myOutput = ''
-    let myError = ''
-    await exec(
-      path.join(process.env.GITHUB_WORKSPACE || '', 'node_modules/.bin/eslint'),
-      [
-        `--fix-dry-run`,
-        '--format=json',
-        path.join(process.env.GITHUB_WORKSPACE || '', 'src/main.ts')
-      ],
-      {
-        listeners: {
-          stdout: (data: Buffer) => {
-            myOutput += data.toString()
-          },
-          stderr: (data: Buffer) => {
-            myError += data.toString()
-          }
-        }
-      }
-    )
-
-    core.debug(myOutput)
-    core.debug(myError)
-     */
   } catch (error) {
     core.debug(error.stack)
     core.setFailed(error.message)
