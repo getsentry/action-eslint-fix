@@ -3294,7 +3294,7 @@ async function getChangedFiles() {
         throw new Error(error);
     }
     core.debug(`getChangedFiles ${output}`);
-    return output.split('\n') || [];
+    return output.trim().split('\n') || [];
 }
 async function run() {
     try {
@@ -3311,13 +3311,10 @@ async function run() {
         try {
             await exec_1.exec('node', [
                 path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
-                `--config`,
-                files[0],
                 `--fix-dry-run`,
                 '--format',
                 'json',
                 ...changedFiles
-                    .map((changedFile) => path.join(process.env.GITHUB_WORKSPACE || '', changedFile))
             ], {
                 listeners: {
                     stdout: (data) => {

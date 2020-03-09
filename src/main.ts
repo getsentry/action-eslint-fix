@@ -50,7 +50,7 @@ async function getChangedFiles(): Promise<string[]>{
   }
 
   core.debug(`getChangedFiles ${output}`)
-  return output.split('\n') || []
+  return output.trim().split('\n') || []
 }
 
 async function run(): Promise<void> {
@@ -73,15 +73,10 @@ async function run(): Promise<void> {
         'node',
         [
           path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
-          `--config`,
-          files[0],
           `--fix-dry-run`,
           '--format',
           'json',
           ...changedFiles
-            .map((changedFile: string) =>
-              path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
-            )
         ],
         {
           listeners: {
