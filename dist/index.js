@@ -3331,9 +3331,9 @@ async function run() {
         }
         catch { }
         core.debug(myError);
-        let report;
+        let results = [];
         try {
-            report = JSON.parse(myOutput);
+            results = JSON.parse(myOutput);
         }
         catch (err) {
             core.setFailed(err.message);
@@ -3379,7 +3379,7 @@ async function run() {
             return;
         }
         const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
-        report.results.forEach(async (result) => {
+        results.forEach(async (result) => {
             const filePath = result.filePath.replace(`${process.env.GITHUB_WORKSPACE}/`, '');
             let file;
             if (result.output) {

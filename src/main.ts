@@ -98,9 +98,9 @@ async function run(): Promise<void> {
 
     core.debug(myError)
 
-    let report
+    let results = [];
     try {
-      report = JSON.parse(myOutput);
+      results = JSON.parse(myOutput);
     } catch(err) {
       core.setFailed(err.message);
     }
@@ -151,7 +151,7 @@ async function run(): Promise<void> {
 
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/')
 
-    report.results.forEach(async (result: any) => {
+    results.forEach(async (result: any) => {
       const filePath = result.filePath.replace(
         `${process.env.GITHUB_WORKSPACE}/`,
         ''
