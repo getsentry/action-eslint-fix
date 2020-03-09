@@ -3043,6 +3043,14 @@ function paginatePlugin(octokit) {
 
 /***/ }),
 
+/***/ 153:
+/***/ (function() {
+
+eval("require")("eslint/lib/cli-engine/formatters/stylish");
+
+
+/***/ }),
+
 /***/ 168:
 /***/ (function(module) {
 
@@ -3316,6 +3324,7 @@ async function run() {
                 'json',
                 ...changedFiles
             ], {
+                silent: true,
                 listeners: {
                     stdout: (data) => {
                         myOutput += data.toString();
@@ -3331,6 +3340,8 @@ async function run() {
         let results = [];
         try {
             results = JSON.parse(myOutput);
+            const stylish = __webpack_require__(153);
+            console.log(stylish(results));
         }
         catch (err) {
             core.setFailed(err.message);
