@@ -98,11 +98,11 @@ async function run(): Promise<void> {
 
     core.debug(myError)
 
-    let results = [];
+    let results = []
     try {
-      results = JSON.parse(myOutput);
+      results = JSON.parse(myOutput)
     } catch(err) {
-      core.setFailed(err.message);
+      core.setFailed(err.message)
     }
 
 
