@@ -4,7 +4,7 @@ import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as glob from '@actions/glob'
 import * as Webhooks from '@octokit/webhooks'
-import {CLIEngine} from 'eslint';
+import {CLIEngine} from 'eslint'
 
 import {exec} from '@actions/exec'
 
