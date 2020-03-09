@@ -98,9 +98,8 @@ async function run(): Promise<void> {
     let results = []
     try {
       results = JSON.parse(myOutput)
-      const CLIEngine = require('eslint').CLIEngine
-      const stylish = CLIEngine.getFormatter()
-      console.log(stylish(results))
+      const stylish = require('eslint/lib/formatters/stylish');
+      console.log(stylish(results));
     } catch(err) {
       core.setFailed(err.message)
     }
