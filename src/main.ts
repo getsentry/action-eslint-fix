@@ -58,7 +58,7 @@ async function getChangedFiles(): Promise<string[]>{
 async function run(): Promise<void> {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const CLIEngine = require('eslint').CLIEngine
+    // const CLIEngine = require('eslint').CLIEngine
     const octokit = new github.GitHub(core.getInput('myToken'))
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
@@ -104,16 +104,16 @@ async function run(): Promise<void> {
     core.debug(myOutput)
     core.debug(myError)
 
-    const cli = new CLIEngine({
-      // configFile: path.join(
-      // process.env.GITHUB_WORKSPACE || '',
-      // '.eslintrc.json'
-      // ),
-      configFile: files[0],
-      useEslintrc: false,
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      fix: true
-    })
+    // const cli = new CLIEngine({
+      // // configFile: path.join(
+      // // process.env.GITHUB_WORKSPACE || '',
+      // // '.eslintrc.json'
+      // // ),
+      // configFile: files[0],
+      // useEslintrc: false,
+      // extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      // fix: true
+    // })
 
     core.debug(`cwd: ${process.cwd()}`)
 
@@ -130,6 +130,7 @@ async function run(): Promise<void> {
         .join(', ')
     )
     // This is probably going to fail on filenames with a space?
+    /*
     const report = cli.executeOnFiles(
       changedFiles
         .map((changedFile: string) =>
@@ -183,6 +184,7 @@ async function run(): Promise<void> {
         })
       }
     })
+     */
 
     /**
      * Alternative eslint runner
