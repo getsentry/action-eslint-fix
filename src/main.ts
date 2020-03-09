@@ -12,14 +12,14 @@ async function getChangedFiles(): Promise<string[]>{
   let output = ''
   let error = ''
 
-  core.debug('getChangedFiles');
+  core.debug('getChangedFiles')
 
   if (!process.env.GITHUB_EVENT_PATH) {
-    core.debug('no event path');
-    return [];
+    core.debug('no event path')
+    return []
   }
 
-  const event = require(process.env.GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest;
+  const event = require(process.env.GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
 
   try {
     await exec(
