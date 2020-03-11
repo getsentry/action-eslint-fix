@@ -10,8 +10,8 @@ import {exec} from '@actions/exec'
 async function getChangedFiles(): Promise<string[]>{
   let output = ''
   let error = ''
+  core.debug(`getChangedFiles`);
 
-  core.debug('getChangedFiles')
 
   if (!process.env.GITHUB_EVENT_PATH) {
     core.debug('no event path')
@@ -19,6 +19,7 @@ async function getChangedFiles(): Promise<string[]>{
   }
 
   const event = require(process.env.GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
+  core.debug(`getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`)
 
   try {
     await exec(
@@ -58,8 +59,6 @@ async function run(): Promise<void> {
     const octokit = new github.GitHub(core.getInput('myToken'))
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
-
-    const patterns = ['.eslintrc*']
 
     let myOutput = ''
     let myError = ''

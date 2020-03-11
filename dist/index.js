@@ -2457,12 +2457,13 @@ const exec_1 = __webpack_require__(986);
 async function getChangedFiles() {
     let output = '';
     let error = '';
-    core.debug('getChangedFiles');
+    core.debug(`getChangedFiles`);
     if (!process.env.GITHUB_EVENT_PATH) {
         core.debug('no event path');
         return [];
     }
     const event = __webpack_require__(169)(process.env.GITHUB_EVENT_PATH);
+    core.debug(`getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`);
     try {
         await exec_1.exec('git', [
             'diff-tree',
@@ -2495,7 +2496,6 @@ async function run() {
         const octokit = new github.GitHub(core.getInput('myToken'));
         const changedFiles = await getChangedFiles();
         core.debug(changedFiles.join(', '));
-        const patterns = ['.eslintrc*'];
         let myOutput = '';
         let myError = '';
         try {
