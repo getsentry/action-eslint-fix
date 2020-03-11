@@ -10,7 +10,7 @@ import {exec} from '@actions/exec'
 async function getChangedFiles(): Promise<string[]>{
   let output = ''
   let error = ''
-  core.debug(`getChangedFiles`);
+  core.debug(`getChangedFiles`)
 
 
   if (!process.env.GITHUB_EVENT_PATH) {
