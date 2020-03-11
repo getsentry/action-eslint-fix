@@ -2,7 +2,6 @@ import * as path from 'path'
 
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import * as glob from '@actions/glob'
 import * as Webhooks from '@octokit/webhooks'
 import {CLIEngine} from 'eslint'
 
@@ -61,11 +60,6 @@ async function run(): Promise<void> {
     core.debug(changedFiles.join(', '))
 
     const patterns = ['.eslintrc*']
-    const globber = await glob.create(patterns.join('\n'))
-    const files = await globber.glob()
-
-    core.debug(`config files`)
-    core.debug(`config files ${files.join(', ')}`)
 
     let myOutput = ''
     let myError = ''
