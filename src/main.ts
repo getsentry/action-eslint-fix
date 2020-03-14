@@ -96,7 +96,7 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(myError)
+    core.debug('error' + myError)
 
     let results = []
     try {
