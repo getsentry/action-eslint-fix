@@ -104,6 +104,7 @@ async function run(): Promise<void> {
       const stylish = require('eslint/lib/formatters/stylish')
 
       // eslint-disable-next-line no-console
+      core.debug(myOutput)
       console.log(stylish(results))
     } catch (err) {
       core.setFailed(err.message)
