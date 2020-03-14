@@ -6,11 +6,12 @@ import * as Webhooks from '@octokit/webhooks'
 
 import {exec} from '@actions/exec'
 
-async function getChangedFiles(): Promise<string[]>{
+const EXTENSIONS = ['js,jsx,ts,tsx']
+
+async function getChangedFiles(): Promise<string[]> {
   let output = ''
   let error = ''
   core.debug(`getChangedFiles`)
-
 
   if (!process.env.GITHUB_EVENT_PATH) {
     core.debug('no event path')
@@ -18,8 +19,12 @@ async function getChangedFiles(): Promise<string[]>{
   }
 
   // eslint-disable-next-line @typescript-eslint/no-require-imports @typescript-eslint/no-var-requires
-  const event = require(process.env.GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
-  core.debug(`getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`)
+  const event = require(process.env
+    .GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
+
+  core.debug(
+    `getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`
+  )
 
   try {
     await exec(
@@ -50,8 +55,12 @@ async function getChangedFiles(): Promise<string[]>{
     throw new Error(error)
   }
 
-  core.debug(`getChangedFiles ${output}`)
-  return output.trim().split('\n') || []
+  return (
+    output
+      .trim()
+      .split('\n')
+      .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
+  )
 }
 
 async function run(): Promise<void> {
@@ -68,7 +77,7 @@ async function run(): Promise<void> {
         [
           path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
           '--ext',
-          'js,jsx,ts,tsx',
+          EXTENSIONS,
           `--fix-dry-run`,
           '--format',
           'json',
@@ -96,10 +105,9 @@ async function run(): Promise<void> {
       // eslint-disable-next-line @typescript-eslint/no-require-imports @typescript-eslint/no-var-requires
       const stylish = require('eslint/lib/formatters/stylish')
       console.log(stylish(results))
-    } catch(err) {
+    } catch (err) {
       core.setFailed(err.message)
     }
-
 
     // core.debug(myOutput)
 
