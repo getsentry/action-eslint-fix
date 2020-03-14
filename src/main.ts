@@ -105,6 +105,10 @@ async function run(): Promise<void> {
 
       core.debug(`myOutput${myOutput}`)
       console.log(stylish(results))
+
+      if (results.find(({errorCount}: any) => errorCount > 0)) {
+        core.setFailed('Failed eslint')
+      }
     } catch (err) {
       core.setFailed(err.message)
     }
