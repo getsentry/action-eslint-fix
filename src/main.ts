@@ -3,10 +3,11 @@ import * as path from 'path'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as Webhooks from '@octokit/webhooks'
+import {CLIEngine} from 'eslint'
 
 import {exec} from '@actions/exec'
 
-const EXTENSIONS = ['js', 'jsx', 'ts', 'tsx']
+const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
 
 async function getChangedFiles(): Promise<string[]> {
   let output = ''
@@ -54,12 +55,8 @@ async function getChangedFiles(): Promise<string[]> {
     throw new Error(error)
   }
 
-  return (
-    output
-      .trim()
-      .split('\n')
-      .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
-  )
+  return output.trim().split('\n') || []
+  // .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
 }
 
 async function run(): Promise<void> {
@@ -68,6 +65,9 @@ async function run(): Promise<void> {
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
 
+    let results: any = []
+
+    /*
     let myOutput = ''
     let myError = ''
     try {
@@ -96,61 +96,41 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(`error${myError}`)
-
-    let results = []
     try {
       results = JSON.parse(myOutput)
       const stylish = require('eslint/lib/formatters/stylish')
 
-      core.debug(`myOutput${myOutput}`)
-      console.log(stylish(results))
+      console.log(stylish(results)) // eslint-disable-line no-console
 
       if (results.find(({errorCount}: any) => errorCount > 0)) {
-        core.setFailed('Failed eslint')
+        core.setFailed('eslint completed with errors')
       }
     } catch (err) {
       core.setFailed(err.message)
     }
+     */
 
-    // core.debug(myOutput)
-
-    /**
     const cli = new CLIEngine({
       // configFile: path.join(
       // process.env.GITHUB_WORKSPACE || '',
       // '.eslintrc.json'
       // ),
       // configFile: files[0],
-      // useEslintrc: false,
+      useEslintrc: true,
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       fix: true
     })
 
     core.debug(`cwd: ${process.cwd()}`)
 
-    if (!changedFiles.length) {
-      core.debug('No changed files')
-      return
-    }
-
-    core.debug(
-      changedFiles
-        .map((changedFile: string) =>
-          path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
-        )
-        .join(', ')
-    )
     // This is probably going to fail on filenames with a space?
     const report = cli.executeOnFiles(
-      changedFiles
-        .map((changedFile: string) =>
-          path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
-        )
+      changedFiles.map((changedFile: string) =>
+        path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
+      )
     )
 
     core.debug(JSON.stringify(report, null, 2))
-     **/
 
     if (!process.env.GITHUB_REPOSITORY) {
       return
