@@ -70,8 +70,8 @@ async function run(): Promise<void> {
 
     let results: any = []
 
-    let myOutput = ''
-    let myError = ''
+    let eslintOutput = ''
+    let eslintError = ''
     try {
       await exec(
         'node',
@@ -86,18 +86,20 @@ async function run(): Promise<void> {
           silent: true,
           listeners: {
             stdout: (data: Buffer) => {
-              myOutput += data.toString()
+              eslintOutput += data.toString()
             },
             stderr: (data: Buffer) => {
-              myError += data.toString()
+              eslintError += data.toString()
             }
           }
         }
       )
     } catch {}
 
+    core.debug(`error running eslint: ${eslintError}`)
+
     try {
-      results = JSON.parse(myOutput)
+      results = JSON.parse(eslintOutput)
       const stylish = require('eslint/lib/formatters/stylish')
 
       // log to console so github action problem matchers can work on output
