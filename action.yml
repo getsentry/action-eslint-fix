@@ -1,10 +1,13 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'eslint + fix'
+description: 'Lint and fix javascript/typescript code'
+author: 'getsentry'
+branding:
+  icon: 'edit-3'
+  color: '#44254f'
 inputs:
-  myInput:              # change this
-    description: 'input description here'
-    default: 'default value if applicable'
+  GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
