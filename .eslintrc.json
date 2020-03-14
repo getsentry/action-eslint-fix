@@ -4,7 +4,8 @@
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
       "ecmaVersion": 9,
-      "sourceType": "module"
+      "sourceType": "module",
+      "project": "./tsconfig.json"
     },
     "rules": {
       "eslint-comments/no-use": "off",
@@ -14,6 +15,7 @@
       "@typescript-eslint/explicit-member-accessibility": ["error", {"accessibility": "no-public"}],
       "@typescript-eslint/no-require-imports": "off",
       "@typescript-eslint/array-type": "error",
+      "@typescript-eslint/await-thenable": "error",
       "@typescript-eslint/ban-ts-ignore": "error",
       "camelcase": "off",
       "@typescript-eslint/camelcase": "error",
@@ -33,7 +35,7 @@
       "@typescript-eslint/no-object-literal-type-assertion": "error",
       "@typescript-eslint/no-unnecessary-qualifier": "error",
       "@typescript-eslint/no-unnecessary-type-assertion": "error",
-      "1@typescript-eslint/no-useless-constructor": "error",
+      "@typescript-eslint/no-useless-constructor": "error",
       "@typescript-eslint/no-var-requires": "off",
       "@typescript-eslint/prefer-for-of": "warn",
       "@typescript-eslint/prefer-function-type": "warn",

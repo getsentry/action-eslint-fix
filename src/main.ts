@@ -64,7 +64,6 @@ async function getChangedFiles(): Promise<string[]> {
 
 async function run(): Promise<void> {
   try {
-    const octokit = new github.GitHub(core.getInput('GITHUB_TOKEN'))
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
 
@@ -118,6 +117,7 @@ async function run(): Promise<void> {
 
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/')
 
+    const octokit = new github.GitHub(core.getInput('GITHUB_TOKEN'))
     for (const result of results) {
       const filePath = result.filePath.replace(
         `${process.env.GITHUB_WORKSPACE}/`,
