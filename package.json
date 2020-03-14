@@ -9,7 +9,7 @@
     "format": "yarn prettier --write **/*.ts",
     "lint": "yarn eslint src/**/*.ts",
     "test": "yarn jest",
-    "all": "yarn build && yarn ncc build && yarn test"
+    "all": "yarn build && yarn ncc build"
   },
   "repository": {
     "type": "git",
