@@ -3,7 +3,6 @@ import * as path from 'path'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as Webhooks from '@octokit/webhooks'
-import {CLIEngine} from 'eslint'
 
 import {exec} from '@actions/exec'
 
@@ -18,6 +17,7 @@ async function getChangedFiles(): Promise<string[]>{
     return []
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-require-imports @typescript-eslint/no-var-requires
   const event = require(process.env.GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
   core.debug(`getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`)
 
@@ -67,6 +67,7 @@ async function run(): Promise<void> {
         'node',
         [
           path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
+          '--ext js,jsx,ts,tsx',
           `--fix-dry-run`,
           '--format',
           'json',
@@ -91,6 +92,7 @@ async function run(): Promise<void> {
     let results = []
     try {
       results = JSON.parse(myOutput)
+      // eslint-disable-next-line @typescript-eslint/no-require-imports @typescript-eslint/no-var-requires
       const stylish = require('eslint/lib/formatters/stylish')
       console.log(stylish(results))
     } catch(err) {
