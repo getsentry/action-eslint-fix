@@ -178,7 +178,7 @@ async function run(): Promise<void> {
           message: 'style(): Auto eslint fix',
           content: Buffer.from(result.output).toString('base64'),
           branch: process.env.GITHUB_HEAD_REF
-        });
+        })
       }
     })
   } catch (error) {
