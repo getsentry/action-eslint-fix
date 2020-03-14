@@ -1,10 +1,9 @@
 import * as path from 'path'
 
 import * as core from '@actions/core'
+import {exec} from '@actions/exec'
 import * as github from '@actions/github'
 import * as Webhooks from '@octokit/webhooks'
-
-import {exec} from '@actions/exec'
 
 const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
 
@@ -111,12 +110,7 @@ async function run(): Promise<void> {
       core.setFailed(err.message)
     }
 
-    if (!process.env.GITHUB_REPOSITORY) {
-      return
-    }
-
-    const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/')
-
+    const {owner, repo} = github.context.repo
     const octokit = new github.GitHub(core.getInput('GITHUB_TOKEN'))
     for (const result of results) {
       const filePath = result.filePath.replace(
