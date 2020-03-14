@@ -4,6 +4,10 @@ author: 'getsentry'
 branding:
   icon: 'edit-3'
   color: '#44254f'
+inputs:
+  GITHUB_TOKEN:
+    description: 'GitHub token'
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
