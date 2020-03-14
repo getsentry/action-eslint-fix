@@ -67,7 +67,8 @@ async function run(): Promise<void> {
         'node',
         [
           path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
-          '--ext js,jsx,ts,tsx',
+          '--ext',
+          'js,jsx,ts,tsx',
           `--fix-dry-run`,
           '--format',
           'json',
