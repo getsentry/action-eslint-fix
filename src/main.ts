@@ -56,7 +56,7 @@ async function getChangedFiles(): Promise<string[]>{
 
 async function run(): Promise<void> {
   try {
-    const octokit = new github.GitHub(core.getInput('myToken'))
+    const octokit = new github.GitHub(core.getInput('GITHUB_TOKEN'))
     const changedFiles = await getChangedFiles()
     core.debug(changedFiles.join(', '))
 
