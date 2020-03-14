@@ -3,7 +3,7 @@ description: 'Lint and fix javascript/typescript code'
 author: 'getsentry'
 branding:
   icon: 'edit-3'
-  color: '#44254f'
+  color: 'purple'
 inputs:
   GITHUB_TOKEN:
     description: 'GitHub token'
