@@ -6,7 +6,7 @@ import * as Webhooks from '@octokit/webhooks'
 
 import {exec} from '@actions/exec'
 
-const EXTENSIONS = ['js,jsx,ts,tsx']
+const EXTENSIONS = ['js', 'jsx', 'ts', 'tsx']
 
 async function getChangedFiles(): Promise<string[]> {
   let output = ''
@@ -77,7 +77,7 @@ async function run(): Promise<void> {
         [
           path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
           '--ext',
-          EXTENSIONS,
+          EXTENSIONS.join(','),
           `--fix-dry-run`,
           '--format',
           'json',
