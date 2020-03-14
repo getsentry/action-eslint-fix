@@ -3,7 +3,6 @@ import * as path from 'path'
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import * as Webhooks from '@octokit/webhooks'
-import {CLIEngine} from 'eslint'
 
 import {exec} from '@actions/exec'
 
@@ -67,7 +66,6 @@ async function run(): Promise<void> {
 
     let results: any = []
 
-    /*
     let myOutput = ''
     let myError = ''
     try {
@@ -100,6 +98,7 @@ async function run(): Promise<void> {
       results = JSON.parse(myOutput)
       const stylish = require('eslint/lib/formatters/stylish')
 
+      // log to console so github action problem matchers can work on output
       console.log(stylish(results)) // eslint-disable-line no-console
 
       if (results.find(({errorCount}: any) => errorCount > 0)) {
@@ -108,29 +107,6 @@ async function run(): Promise<void> {
     } catch (err) {
       core.setFailed(err.message)
     }
-     */
-
-    const cli = new CLIEngine({
-      // configFile: path.join(
-      // process.env.GITHUB_WORKSPACE || '',
-      // '.eslintrc.json'
-      // ),
-      // configFile: files[0],
-      useEslintrc: true,
-      extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      fix: true
-    })
-
-    core.debug(`cwd: ${process.cwd()}`)
-
-    // This is probably going to fail on filenames with a space?
-    const report = cli.executeOnFiles(
-      changedFiles.map((changedFile: string) =>
-        path.join(process.env.GITHUB_WORKSPACE || '', changedFile)
-      )
-    )
-
-    core.debug(JSON.stringify(report, null, 2))
 
     if (!process.env.GITHUB_REPOSITORY) {
       return
