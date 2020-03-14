@@ -103,8 +103,7 @@ async function run(): Promise<void> {
       results = JSON.parse(myOutput)
       const stylish = require('eslint/lib/formatters/stylish')
 
-      // eslint-disable-next-line no-console
-      core.debug(myOutput)
+      core.debug('myOutput' + myOutput)
       console.log(stylish(results))
     } catch (err) {
       core.setFailed(err.message)
