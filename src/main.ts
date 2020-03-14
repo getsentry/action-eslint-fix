@@ -54,8 +54,12 @@ async function getChangedFiles(): Promise<string[]> {
     throw new Error(error)
   }
 
-  return output.trim().split('\n') || []
-  // .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
+  return (
+    output
+      .trim()
+      .split('\n')
+      .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
+  )
 }
 
 async function run(): Promise<void> {
@@ -73,8 +77,6 @@ async function run(): Promise<void> {
         'node',
         [
           path.join(process.cwd(), 'node_modules/eslint/bin/eslint'),
-          '--ext',
-          EXTENSIONS.join(','),
           `--fix-dry-run`,
           '--format',
           'json',
