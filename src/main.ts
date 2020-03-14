@@ -18,7 +18,6 @@ async function getChangedFiles(): Promise<string[]> {
     return []
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports @typescript-eslint/no-var-requires
   const event = require(process.env
     .GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
 
@@ -102,8 +101,9 @@ async function run(): Promise<void> {
     let results = []
     try {
       results = JSON.parse(myOutput)
-      // eslint-disable-next-line @typescript-eslint/no-require-imports @typescript-eslint/no-var-requires
       const stylish = require('eslint/lib/formatters/stylish')
+
+      // eslint-disable-next-line no-console
       console.log(stylish(results))
     } catch (err) {
       core.setFailed(err.message)
@@ -154,7 +154,7 @@ async function run(): Promise<void> {
 
     const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/')
 
-    results.forEach(async (result: any) => {
+    for (const result of results) {
       const filePath = result.filePath.replace(
         `${process.env.GITHUB_WORKSPACE}/`,
         ''
@@ -191,7 +191,7 @@ async function run(): Promise<void> {
           branch: process.env.GITHUB_HEAD_REF
         })
       }
-    })
+    }
   } catch (error) {
     core.debug(error.stack)
     core.setFailed(error.message)
