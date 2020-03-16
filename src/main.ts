@@ -111,7 +111,14 @@ async function run(): Promise<void> {
     }
 
     const {owner, repo} = github.context.repo
-    const octokit = new github.GitHub(core.getInput('GITHUB_TOKEN'))
+    const token = core.getInput('GITHUB_TOKEN')
+
+    if (!token) {
+      core.debug(`NO GITHUB_TOKEN`)
+    }
+
+    const octokit = new github.GitHub(token)
+
     for (const result of results) {
       const filePath = result.filePath.replace(
         `${process.env.GITHUB_WORKSPACE}/`,
