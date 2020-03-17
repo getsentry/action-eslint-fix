@@ -1,6 +1,6 @@
 # getsentry/action-eslint-fix
 
-Runs eslint (only on changed files in a PR), with `--fix` and commits the changes to the PR.
+Runs [eslint](https://eslint.org/) (only on changed files in a PR), with `--fix` and commits the changes to the PR.
 
 
 ## Installation
