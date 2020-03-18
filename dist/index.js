@@ -3061,7 +3061,7 @@ const core = __importStar(__webpack_require__(470));
 const exec_1 = __webpack_require__(986);
 const github = __importStar(__webpack_require__(469));
 const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx'];
-async function getChangedFiles() {
+async function getChangedFiles(octokit) {
     let output = '';
     let error = '';
     core.debug(`getChangedFiles`);
@@ -3071,7 +3071,17 @@ async function getChangedFiles() {
     }
     const event = __webpack_require__(169)(process.env
         .GITHUB_EVENT_PATH);
-    core.debug(`getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`);
+    const { owner, repo } = github.context.repo;
+    // Get SHA of the first commit of this PR so that we only lint files changed in the PR
+    const commits = await octokit.pulls.listCommits({
+        owner,
+        repo,
+        pull_number: event.pull_request.number,
+        per_page: 1
+    });
+    const base = commits.data[0].sha;
+    const head = event.pull_request.head.sha;
+    core.debug(`getChangedFiles between: ${base}~, ${head}`);
     try {
         await exec_1.exec('git', [
             'diff-tree',
@@ -3079,8 +3089,8 @@ async function getChangedFiles() {
             '--no-commit-id',
             '--name-only',
             '-r',
-            event.pull_request.base.sha,
-            event.pull_request.head.sha
+            `${base}~`,
+            head
         ], {
             listeners: {
                 stdout: (data) => {
@@ -3103,7 +3113,13 @@ async function getChangedFiles() {
 }
 async function run() {
     try {
-        const changedFiles = await getChangedFiles();
+        const { owner, repo } = github.context.repo;
+        const token = core.getInput('GITHUB_TOKEN');
+        if (!token) {
+            core.debug(`NO GITHUB_TOKEN`);
+        }
+        const octokit = new github.GitHub(token);
+        const changedFiles = await getChangedFiles(octokit);
         core.debug(changedFiles.join(', '));
         let results = [];
         let eslintOutput = '';
@@ -3141,12 +3157,6 @@ async function run() {
         catch (err) {
             core.setFailed(err.message);
         }
-        const { owner, repo } = github.context.repo;
-        const token = core.getInput('GITHUB_TOKEN');
-        if (!token) {
-            core.debug(`NO GITHUB_TOKEN`);
-        }
-        const octokit = new github.GitHub(token);
         for (const result of results) {
             const filePath = result.filePath.replace(`${process.env.GITHUB_WORKSPACE}/`, '');
             let file;

@@ -7,7 +7,7 @@ import * as Webhooks from '@octokit/webhooks'
 
 const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
 
-async function getChangedFiles(): Promise<string[]> {
+async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
   let output = ''
   let error = ''
   core.debug(`getChangedFiles`)
@@ -20,9 +20,20 @@ async function getChangedFiles(): Promise<string[]> {
   const event = require(process.env
     .GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
 
-  core.debug(
-    `getChangedFiles, ${event.pull_request.base.sha}, ${event.pull_request.head.sha}`
-  )
+  const {owner, repo} = github.context.repo
+
+  // Get SHA of the first commit of this PR so that we only lint files changed in the PR
+  const commits = await octokit.pulls.listCommits({
+    owner,
+    repo,
+    pull_number: event.pull_request.number,
+    per_page: 1
+  })
+
+  const base = commits.data[0].sha
+  const head = event.pull_request.head.sha
+
+  core.debug(`getChangedFiles between: ${base}~, ${head}`)
 
   try {
     await exec(
@@ -33,8 +44,8 @@ async function getChangedFiles(): Promise<string[]> {
         '--no-commit-id',
         '--name-only',
         '-r',
-        event.pull_request.base.sha,
-        event.pull_request.head.sha
+        `${base}~`,
+        head
       ],
       {
         listeners: {
@@ -63,7 +74,16 @@ async function getChangedFiles(): Promise<string[]> {
 
 async function run(): Promise<void> {
   try {
-    const changedFiles = await getChangedFiles()
+    const {owner, repo} = github.context.repo
+    const token = core.getInput('GITHUB_TOKEN')
+
+    if (!token) {
+      core.debug(`NO GITHUB_TOKEN`)
+    }
+
+    const octokit = new github.GitHub(token)
+
+    const changedFiles = await getChangedFiles(octokit)
     core.debug(changedFiles.join(', '))
 
     let results: any = []
@@ -109,15 +129,6 @@ async function run(): Promise<void> {
     } catch (err) {
       core.setFailed(err.message)
     }
-
-    const {owner, repo} = github.context.repo
-    const token = core.getInput('GITHUB_TOKEN')
-
-    if (!token) {
-      core.debug(`NO GITHUB_TOKEN`)
-    }
-
-    const octokit = new github.GitHub(token)
 
     for (const result of results) {
       const filePath = result.filePath.replace(
