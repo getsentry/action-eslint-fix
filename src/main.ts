@@ -24,8 +24,8 @@ async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
   const {data: files} = await octokit.pulls.listFiles({
     owner,
     repo,
-    pull_number: event.pull_request.number,
-    per_page: 100,
+    pull_number: event.pull_request.number, // eslint-disable-line @typescript-eslint/camelcase
+    per_page: 100, // eslint-disable-line @typescript-eslint/camelcase
     page: 1
   })
 
