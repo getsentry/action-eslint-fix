@@ -83,7 +83,7 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(`error running eslint: ${eslintError}`)
+    core.debug(`error running eslint?: ${eslintError}`)
 
     try {
       results = JSON.parse(eslintOutput)
