@@ -8,8 +8,6 @@ import * as Webhooks from '@octokit/webhooks'
 const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
 
 async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
-  let output = ''
-  let error = ''
   core.debug(`getChangedFiles`)
 
   if (!process.env.GITHUB_EVENT_PATH) {
@@ -23,53 +21,21 @@ async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
   const {owner, repo} = github.context.repo
 
   // Get SHA of the first commit of this PR so that we only lint files changed in the PR
-  const commits = await octokit.pulls.listCommits({
+  const {data: files} = await octokit.pulls.listFiles({
     owner,
     repo,
     pull_number: event.pull_request.number,
-    per_page: 1
+    per_page: 100,
+    page: 1
   })
 
-  const base = commits.data[0].sha
-  const head = event.pull_request.head.sha
-
-  core.debug(`getChangedFiles between: ${base}~, ${head}`)
-
-  try {
-    await exec(
-      'git',
-      [
-        'diff-tree',
-        '--diff-filter=d',
-        '--no-commit-id',
-        '--name-only',
-        '-r',
-        `${base}~`,
-        head
-      ],
-      {
-        listeners: {
-          stdout: (data: Buffer) => {
-            output += data.toString()
-          },
-          stderr: (data: Buffer) => {
-            error += data.toString()
-          }
-        }
-      }
+  return files
+    .filter(
+      file =>
+        file.status !== 'd' &&
+        EXTENSIONS.find(ext => file.filename.endsWith(ext))
     )
-  } catch {}
-
-  if (error) {
-    throw new Error(error)
-  }
-
-  return (
-    output
-      .trim()
-      .split('\n')
-      .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
-  )
+    .map(file => file.filename)
 }
 
 async function run(): Promise<void> {
