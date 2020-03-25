@@ -32,10 +32,12 @@ async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
 
   files.forEach(file => core.debug(`${file.filename} ${file.status}`))
 
+  // Do not return removed files, as we can't lint those
+  // Not sure if there are other statuses we need to consider
   return files
     .filter(
       file =>
-        file.status !== 'd' &&
+        file.status !== 'removed' &&
         EXTENSIONS.find(ext => file.filename.endsWith(ext))
     )
     .map(file => file.filename)
