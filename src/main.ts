@@ -20,14 +20,17 @@ async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
 
   const {owner, repo} = github.context.repo
 
-  // Get SHA of the first commit of this PR so that we only lint files changed in the PR
-  const {data: files} = await octokit.pulls.listFiles({
+  const options = octokit.pulls.listFiles.endpoint.merge({
     owner,
     repo,
     pull_number: event.pull_request.number, // eslint-disable-line @typescript-eslint/camelcase
     per_page: 100, // eslint-disable-line @typescript-eslint/camelcase
     page: 1
   })
+
+  const files = await octokit.paginate(options)
+
+  files.forEach(file => core.debug(`${file.filename} ${file.status}`))
 
   return files
     .filter(

@@ -1,6 +1,6 @@
 {
     "plugins": ["@typescript-eslint", "prettier"],
-    "extends": ["plugin:github/es6", "plugin:prettier/recommended"],
+    "extends": ["plugin:prettier/recommended"],
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
       "ecmaVersion": 9,
@@ -42,7 +42,7 @@
       "@typescript-eslint/prefer-includes": "error",
       "@typescript-eslint/prefer-interface": "error",
       "@typescript-eslint/prefer-string-starts-ends-with": "error",
-      "@typescript-eslint/promise-function-async": "error",
+      "@typescript-eslint/promise-function-async": "off",
       "@typescript-eslint/require-array-sort-compare": "error",
       "@typescript-eslint/restrict-plus-operands": "error",
       "semi": "off",
