@@ -17,7 +17,7 @@ export async function getChangedFiles(
   const event = require(process.env
     .GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
 
-  const {owner, repo} = github.context.repo
+  const {owner, repo} = github.context.repo;
 
   const options = octokit.pulls.listFiles.endpoint.merge({
     owner,
