@@ -3,74 +3,8 @@ import * as path from 'path'
 import * as core from '@actions/core'
 import {exec} from '@actions/exec'
 import * as github from '@actions/github'
-import * as Webhooks from '@octokit/webhooks'
 
-const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
-
-async function getChangedFiles(octokit: github.GitHub): Promise<string[]> {
-  let output = ''
-  let error = ''
-  core.debug(`getChangedFiles`)
-
-  if (!process.env.GITHUB_EVENT_PATH) {
-    core.debug('no event path')
-    return []
-  }
-
-  const event = require(process.env
-    .GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
-
-  const {owner, repo} = github.context.repo
-
-  // Get SHA of the first commit of this PR so that we only lint files changed in the PR
-  const commits = await octokit.pulls.listCommits({
-    owner,
-    repo,
-    pull_number: event.pull_request.number,
-    per_page: 1
-  })
-
-  const base = commits.data[0].sha
-  const head = event.pull_request.head.sha
-
-  core.debug(`getChangedFiles between: ${base}~, ${head}`)
-
-  try {
-    await exec(
-      'git',
-      [
-        'diff-tree',
-        '--diff-filter=d',
-        '--no-commit-id',
-        '--name-only',
-        '-r',
-        `${base}~`,
-        head
-      ],
-      {
-        listeners: {
-          stdout: (data: Buffer) => {
-            output += data.toString()
-          },
-          stderr: (data: Buffer) => {
-            error += data.toString()
-          }
-        }
-      }
-    )
-  } catch {}
-
-  if (error) {
-    throw new Error(error)
-  }
-
-  return (
-    output
-      .trim()
-      .split('\n')
-      .filter(filename => EXTENSIONS.find(ext => filename.endsWith(ext))) || []
-  )
-}
+import {getChangedFiles} from './getChangedFiles'
 
 async function run(): Promise<void> {
   try {
@@ -114,7 +48,7 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(`error running eslint: ${eslintError}`)
+    core.debug(`error running eslint?: ${eslintError}`)
 
     try {
       results = JSON.parse(eslintOutput)
