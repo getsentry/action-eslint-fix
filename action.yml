@@ -8,6 +8,10 @@ inputs:
   GITHUB_TOKEN:
     description: 'GitHub token'
     required: true
+  dry:
+    description: Just runs eslint, doesn't commit any changes
+    required: false
+    default: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -14,3 +14,12 @@ Add the following to your workflow config
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
+If you would prefer this action to not modify files for you, use the following config:
+
+```yaml
+    - name: Use current action
+      uses: getsentry/action-eslint-fix@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        dry: true
+```
