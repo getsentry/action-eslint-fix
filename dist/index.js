@@ -5022,6 +5022,9 @@ async function run() {
         const octokit = new github.GitHub(token);
         const changedFiles = await getChangedFiles_1.getChangedFiles(octokit);
         core.debug(changedFiles.join(', '));
+        if (!changedFiles.length) {
+            return;
+        }
         let results = [];
         let eslintOutput = '';
         let eslintError = '';

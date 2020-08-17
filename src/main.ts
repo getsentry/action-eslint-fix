@@ -20,6 +20,10 @@ async function run(): Promise<void> {
     const changedFiles = await getChangedFiles(octokit)
     core.debug(changedFiles.join(', '))
 
+    if (!changedFiles.length) {
+      return
+    }
+
     let results: any = []
 
     let eslintOutput = ''
