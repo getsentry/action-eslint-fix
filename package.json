@@ -8,7 +8,7 @@
     "build": "yarn tsc",
     "format": "yarn prettier --write **/*.ts",
     "lint": "yarn eslint src/**/*.ts",
-    "all": "yarn build && yarn ncc build"
+    "dist": "yarn build && yarn ncc build"
   },
   "repository": {
     "type": "git",

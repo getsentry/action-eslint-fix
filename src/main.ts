@@ -65,6 +65,7 @@ async function run(): Promise<void> {
         core.setFailed('eslint completed with errors')
       }
     } catch (err) {
+      core.debug(eslintOutput);
       core.setFailed(err.message)
     }
 
