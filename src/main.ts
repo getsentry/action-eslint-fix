@@ -55,6 +55,7 @@ async function run(): Promise<void> {
     core.debug(`error running eslint?: ${eslintError}`)
 
     try {
+      console.log(eslintOutput.replace(/\\"/g, '\\"'))
       results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'))
       const stylish = require('eslint/lib/formatters/stylish')
 
