@@ -3080,7 +3080,11 @@ async function run() {
         catch { }
         core.debug(`error running eslint?: ${eslintError}`);
         try {
+            console.log(eslintOutput.indexOf('\\'));
+            console.log(eslintOutput.indexOf('\\"'));
+            console.log(eslintOutput.replace(/\\"/g, '\\\\"'));
             console.log(eslintOutput.replace(/\\"/g, '\\"'));
+            console.log(eslintOutput.replace(/\"/g, '\\"'));
             results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'));
             const stylish = __webpack_require__(279);
             // log to console so github action problem matchers can work on output
