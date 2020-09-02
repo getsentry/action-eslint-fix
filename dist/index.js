@@ -3045,6 +3045,7 @@ const getChangedFiles_1 = __webpack_require__(564);
 async function run() {
     try {
         const { owner, repo } = github.context.repo;
+        const dryRun = core.getInput('dry');
         const token = core.getInput('GITHUB_TOKEN');
         if (!token) {
             core.debug(`NO GITHUB_TOKEN`);
@@ -3091,6 +3092,9 @@ async function run() {
         catch (err) {
             core.debug(eslintOutput);
             core.setFailed(err.message);
+        }
+        if (dryRun) {
+            return;
         }
         for (const result of results) {
             const filePath = result.filePath.replace(`${process.env.GITHUB_WORKSPACE}/`, '');
