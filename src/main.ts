@@ -9,6 +9,7 @@ import {getChangedFiles} from './getChangedFiles'
 async function run(): Promise<void> {
   try {
     const {owner, repo} = github.context.repo
+    const dryRun = core.getInput('dry')
     const token = core.getInput('GITHUB_TOKEN')
 
     if (!token) {
@@ -67,6 +68,10 @@ async function run(): Promise<void> {
     } catch (err) {
       core.debug(eslintOutput)
       core.setFailed(err.message)
+    }
+
+    if (dryRun) {
+      return
     }
 
     for (const result of results) {
