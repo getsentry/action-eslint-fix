@@ -13,7 +13,7 @@ jobs:
     - name: build
       run: |
         yarn install
-        yarn all
+        yarn dist
 
     - name: Use current action
       uses: ./
