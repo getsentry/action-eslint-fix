@@ -57,7 +57,7 @@ async function run(): Promise<void> {
 
     try {
       results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'))
-      const stylish = require('eslint/lib/formatters/stylish')
+      const stylish = require('lib/cli-engine/formatters/stylish.js')
 
       // log to console so github action problem matchers can work on output
       console.log(stylish(results)) // eslint-disable-line no-console
