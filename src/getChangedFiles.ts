@@ -4,32 +4,26 @@ import * as Webhooks from '@octokit/webhooks'
 
 const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
 
-export async function getChangedFiles(
-  octokit: github.GitHub
-): Promise<string[]> {
-  core.debug(`getChangedFiles`)
+type Octokit = ReturnType<typeof github.getOctokit>
 
+export async function getChangedFiles(octokit: Octokit): Promise<string[]> {
   if (!process.env.GITHUB_EVENT_PATH) {
     core.debug('no event path')
     return []
   }
 
   const event = require(process.env
-    .GITHUB_EVENT_PATH) as Webhooks.WebhookPayloadPullRequest
+    .GITHUB_EVENT_PATH) as Webhooks.EventPayloads.WebhookPayloadPullRequest
 
   const {owner, repo} = github.context.repo
 
-  const options = octokit.pulls.listFiles.endpoint.merge({
+  const files = await octokit.paginate(octokit.pulls.listFiles, {
     owner,
     repo,
-    pull_number: event.pull_request.number, // eslint-disable-line @typescript-eslint/camelcase
-    per_page: 100, // eslint-disable-line @typescript-eslint/camelcase
+    pull_number: event.pull_request.number,
+    per_page: 100,
     page: 1
   })
-
-  const files = await octokit.paginate(options)
-
-  files.forEach(file => core.debug(`${file.filename} ${file.status}`))
 
   // Do not return removed files, as we can't lint those
   // Not sure if there are other statuses we need to consider
