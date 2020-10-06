@@ -57,12 +57,14 @@ async function run(): Promise<void> {
 
     try {
       results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'))
-      const {ESLint} = require(path.join(process.cwd(), 'node_modules/eslint'))
-      const eslint = new ESLint()
-      const formatter = await eslint.loadFormatter('stylish')
+      const {CLIEngine} = require(path.join(
+        process.cwd(),
+        'node_modules/eslint'
+      ))
+      const formatter = CLIEngine.getFormatter('stylish')
 
       // log to console so github action problem matchers can work on output
-      console.log(formatter.format(results)) // eslint-disable-line no-console
+      console.log(formatter(results)) // eslint-disable-line no-console
 
       if (results.find(({errorCount}: any) => errorCount > 0)) {
         core.setFailed('eslint completed with errors')
