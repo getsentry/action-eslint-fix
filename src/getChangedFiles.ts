@@ -7,8 +7,6 @@ const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx']
 type Octokit = ReturnType<typeof github.getOctokit>
 
 export async function getChangedFiles(octokit: Octokit): Promise<string[]> {
-  core.debug(`getChangedFiles`)
-
   if (!process.env.GITHUB_EVENT_PATH) {
     core.debug('no event path')
     return []

@@ -32,7 +32,6 @@ const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
 const EXTENSIONS = ['.js', '.jsx', '.ts', '.tsx'];
 async function getChangedFiles(octokit) {
-    core.debug(`getChangedFiles`);
     if (!process.env.GITHUB_EVENT_PATH) {
         core.debug('no event path');
         return [];
@@ -99,7 +98,6 @@ async function run() {
         }
         const octokit = github.getOctokit(token);
         const changedFiles = await getChangedFiles_1.getChangedFiles(octokit);
-        core.debug(changedFiles.join(', '));
         if (!changedFiles.length) {
             return;
         }
@@ -126,9 +124,12 @@ async function run() {
             });
         }
         catch { }
-        core.debug(`error running eslint?: ${eslintError}`);
+        if (eslintError) {
+            core.debug(`error running eslint: ${eslintError}`);
+        }
         try {
             results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'));
+            console.log(results);
             const { CLIEngine } = require(path.join(process.cwd(), 'node_modules/eslint'));
             const formatter = CLIEngine.getFormatter('stylish');
             // log to console so github action problem matchers can work on output

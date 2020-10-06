@@ -19,7 +19,6 @@ async function run(): Promise<void> {
     const octokit = github.getOctokit(token)
 
     const changedFiles = await getChangedFiles(octokit)
-    core.debug(changedFiles.join(', '))
 
     if (!changedFiles.length) {
       return
@@ -53,10 +52,13 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(`error running eslint?: ${eslintError}`)
+    if (eslintError) {
+      core.debug(`error running eslint: ${eslintError}`)
+    }
 
     try {
       results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'))
+      console.log(results)
       const {CLIEngine} = require(path.join(
         process.cwd(),
         'node_modules/eslint'
