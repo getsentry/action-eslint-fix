@@ -129,9 +129,11 @@ async function run() {
         core.debug(`error running eslint?: ${eslintError}`);
         try {
             results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'));
-            const stylish = __webpack_require__(4637);
+            const { ESLint } = __webpack_require__(4864);
+            const eslint = new ESLint();
+            const formatter = await eslint.loadFormatter('stylish');
             // log to console so github action problem matchers can work on output
-            console.log(stylish(results)); // eslint-disable-line no-console
+            console.log(formatter.format(results)); // eslint-disable-line no-console
             if (results.find(({ errorCount }) => errorCount > 0)) {
                 core.setFailed('eslint completed with errors');
             }
@@ -13090,10 +13092,10 @@ module.exports = eval("require")("encoding");
 
 /***/ }),
 
-/***/ 4637:
+/***/ 4864:
 /***/ ((module) => {
 
-module.exports = eval("require")("lib/cli-engine/formatters/stylish.js");
+module.exports = eval("require")("node_modules/eslint");
 
 
 /***/ }),
