@@ -8,7 +8,7 @@
     "build": "yarn tsc",
     "format": "yarn prettier --write **/*.ts",
     "lint": "yarn eslint src/**/*.ts",
-    "dist": "yarn build && yarn ncc build"
+    "dist": "yarn build && yarn ncc build -e eslint"
   },
   "repository": {
     "type": "git",
@@ -23,21 +23,20 @@
   "license": "MIT",
   "dependencies": {
     "@actions/core": "^1.2.6",
-    "@actions/exec": "^1.0.3",
-    "@actions/github": "^2.1.1"
+    "@actions/exec": "^1.0.4",
+    "@actions/github": "^4.0.0"
   },
   "devDependencies": {
-    "@octokit/webhooks": "^7.1.0",
-    "@types/eslint": "^6.1.8",
+    "@octokit/webhooks": "^7.12.0",
     "@types/node": "^12.7.12",
-    "@typescript-eslint/parser": "^2.8.0",
-    "@zeit/ncc": "^0.20.5",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^6.10.0",
-    "eslint-plugin-github": "^2.0.0",
-    "eslint-plugin-prettier": "^3.1.2",
-    "js-yaml": "^3.13.1",
-    "prettier": "^1.19.1",
-    "typescript": "^3.6.4"
+    "@typescript-eslint/eslint-plugin": "^4.4.0",
+    "@typescript-eslint/parser": "^4.4.0",
+    "@vercel/ncc": "^0.24.1",
+    "eslint": "^7.10.0",
+    "eslint-config-prettier": "^6.12.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "js-yaml": "^3.14.0",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
   }
 }

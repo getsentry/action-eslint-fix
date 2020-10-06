@@ -16,10 +16,9 @@ async function run(): Promise<void> {
       core.debug(`NO GITHUB_TOKEN`)
     }
 
-    const octokit = new github.GitHub(token)
+    const octokit = github.getOctokit(token)
 
     const changedFiles = await getChangedFiles(octokit)
-    core.debug(changedFiles.join(', '))
 
     if (!changedFiles.length) {
       return
@@ -53,14 +52,21 @@ async function run(): Promise<void> {
       )
     } catch {}
 
-    core.debug(`error running eslint?: ${eslintError}`)
+    if (eslintError) {
+      core.debug(`error running eslint: ${eslintError}`)
+    }
 
     try {
       results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'))
-      const stylish = require('eslint/lib/formatters/stylish')
+      console.log(results)
+      const {CLIEngine} = require(path.join(
+        process.cwd(),
+        'node_modules/eslint'
+      ))
+      const formatter = CLIEngine.getFormatter('stylish')
 
       // log to console so github action problem matchers can work on output
-      console.log(stylish(results)) // eslint-disable-line no-console
+      console.log(formatter(results)) // eslint-disable-line no-console
 
       if (results.find(({errorCount}: any) => errorCount > 0)) {
         core.setFailed('eslint completed with errors')
@@ -85,7 +91,7 @@ async function run(): Promise<void> {
       if (result.output) {
         try {
           core.debug(`getContents: ${filePath}`)
-          const {data} = await octokit.repos.getContents({
+          const {data} = await octokit.repos.getContent({
             owner,
             repo,
             path: filePath,
@@ -101,7 +107,7 @@ async function run(): Promise<void> {
         }
 
         // Commit eslint fixes
-        octokit.repos.createOrUpdateFile({
+        octokit.repos.createOrUpdateFileContents({
           owner,
           repo,
           path: filePath,
