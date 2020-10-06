@@ -129,7 +129,7 @@ async function run() {
         core.debug(`error running eslint?: ${eslintError}`);
         try {
             results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'));
-            const { ESLint } = __webpack_require__(5044);
+            const { ESLint } = require(path.join(process.cwd(), 'node_modules/eslint'));
             const eslint = new ESLint();
             const formatter = await eslint.loadFormatter('stylish');
             // log to console so github action problem matchers can work on output
@@ -13105,14 +13105,6 @@ module.exports = require("assert");
 
 "use strict";
 module.exports = require("child_process");
-
-/***/ }),
-
-/***/ 5044:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("eslint");
 
 /***/ }),
 

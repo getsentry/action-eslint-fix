@@ -57,7 +57,7 @@ async function run(): Promise<void> {
 
     try {
       results = JSON.parse(eslintOutput.replace(/\\"/g, '\\"'))
-      const {ESLint} = require('eslint')
+      const {ESLint} = require(path.join(process.cwd(), 'node_modules/eslint'))
       const eslint = new ESLint()
       const formatter = await eslint.loadFormatter('stylish')
 
