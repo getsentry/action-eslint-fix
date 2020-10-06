@@ -16,7 +16,7 @@ async function run(): Promise<void> {
       core.debug(`NO GITHUB_TOKEN`)
     }
 
-    const octokit = new github.GitHub(token)
+    const octokit = github.getOctokit(token)
 
     const changedFiles = await getChangedFiles(octokit)
     core.debug(changedFiles.join(', '))
@@ -85,7 +85,7 @@ async function run(): Promise<void> {
       if (result.output) {
         try {
           core.debug(`getContents: ${filePath}`)
-          const {data} = await octokit.repos.getContents({
+          const {data} = await octokit.repos.getContent({
             owner,
             repo,
             path: filePath,
@@ -101,7 +101,7 @@ async function run(): Promise<void> {
         }
 
         // Commit eslint fixes
-        octokit.repos.createOrUpdateFile({
+        octokit.repos.createOrUpdateFileContents({
           owner,
           repo,
           path: filePath,
